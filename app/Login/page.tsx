@@ -3,6 +3,9 @@
 
 import { useState } from "react";
 import { useRouter } from 'next/navigation'
+import { fetchUsers } from "../api/users";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -11,16 +14,20 @@ export default function Login() {
 
   function handleSubmit(e: any) {
     e.preventDefault();
-    if (email === 'prithvibose@gmail.com' || password === 'ABab12$') {
-      setLoading(true)
-      setTimeout(() => {
+    getUsers(e)
+  }
+
+  async function getUsers(e: any){
+    setLoading(true)
+    const resp = await fetchUsers({email:e.target.email.value,password:e.target.password.value,action:'get-user'})
+    if(resp?.status === 200){
+      setLoading(false)
+       router.push('/dashboard') 
+      }
+      else{
         setLoading(false)
-        router.push('/dashboard')
-      }, 2000)
-    }
-    else {
-      alert("invalid credentials")
-    }
+        toast.error('Invalid Email or Password')
+      }
   }
 
   function handleEmail(e: any) {
@@ -105,6 +112,14 @@ export default function Login() {
       ):(
         <div></div>
       )}
+       <ToastContainer 
+        position="top-right"          // Position of the toast
+        autoClose={4000}              // Auto close after 5 seconds
+        hideProgressBar={false}       // Show or hide the progress bar
+        newestOnTop={false}           // Stack newest toasts on top
+        closeOnClick                  // Close the toast when clicked                   // Pause timer on hover
+        draggable                      // Allow dragging toasts to dismiss
+      />
     </div>
 
   );

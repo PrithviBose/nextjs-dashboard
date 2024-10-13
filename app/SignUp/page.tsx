@@ -13,7 +13,7 @@ export default function Page() {
   }
 
   async function callCreateUser(e: any){
-    const resp = await createUser({ email: e.target.email.value, password: e.target.password.value })
+    const resp = await createUser({ email: e.target.email.value, password: e.target.password.value ,action:'create-user'})
     console.log(resp)
     if(resp.success === true){
       toast.success('Sign Up Successful')
