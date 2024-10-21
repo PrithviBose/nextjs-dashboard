@@ -32,8 +32,12 @@ export const createUser = async (users: { email: string; password: string ;actio
       },
       body: JSON.stringify(users),
     })  // Calls the GET API route at /api/users
+    let isPasswordValid = false
     const data = await response.json();
-    const isPasswordValid = bcrypt.compareSync(users?.password, data?.data.password);
+    if(data?.data?.password){
+      isPasswordValid = bcrypt.compareSync(users?.password, data?.data.password);
+    }
+    
     if (!response.ok) {
       throw new Error(data.error || 'Failed to fetch users');
     }

@@ -1,6 +1,9 @@
 'use client';
-
+import { addFreshInvoice } from "../api/invoice";
 import { useState } from "react";
+// import addInvoice from "./api/invoice";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css'; 
 export default function Dashboard() {
 
 
@@ -21,6 +24,10 @@ export default function Dashboard() {
     setAddNewinvoice(false);
   }
 
+  //event handler to handle submission of invoice
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+
+
   return (
     <div className="min-h-screen bg-gray-100 p-6">
       {/* <!-- Header Section --> */}
@@ -31,6 +38,14 @@ export default function Dashboard() {
         </button>
         {addNewinvoice && <AddNewInvoicceForm closeModal={handleCloseModal} />}
       </div>
+      <ToastContainer 
+        position="top-right"          // Position of the toast
+        autoClose={4000}              // Auto close after 5 seconds
+        hideProgressBar={false}       // Show or hide the progress bar
+        newestOnTop={false}           // Stack newest toasts on top
+        closeOnClick                  // Close the toast when clicked                   // Pause timer on hover
+        draggable                      // Allow dragging toasts to dismiss
+      />
 
       {/* <!-- Overview Cards Section --> */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
@@ -172,13 +187,37 @@ export default function Dashboard() {
 }
 
 const AddNewInvoicceForm = ({ closeModal }: { closeModal: () => void }) => {
+
+
+  async function newProductInvoice(e: any){
+    const invoiceData = {
+      invoiceName: e.target.invoiceName.value,
+      clientName: e.target.clientName.value,
+      invoiceDate: e.target.invoiceDate.value,
+      status: e.target.status.value,
+      product: e.target.product.value,
+      amount: e.target.invoiceAmount.value,
+      action: 'Add-invoice'
+    }
+    const res = await addFreshInvoice(invoiceData)
+    if(res.status === 200){
+      toast.success('Invoice Added Successfully')
+    }
+    else{
+      toast.error('Something went wrong')
+  }
+}
+function handleSubmit(e: any){
+  newProductInvoice(e)
+  e.preventDefault();
+}
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-8 rounded-md shadow-md w-96">
-        <h2 className="text-xl font-bold mb-4">Add New Invoice</h2>
+        <h2 className="text-xl text-gray-700 font-bold mb-4">Add New Invoice</h2>
 
         {/* Add New Invoice Form */}
-        <form>
+        <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="invoiceName">
               Invoice Name
@@ -188,7 +227,7 @@ const AddNewInvoicceForm = ({ closeModal }: { closeModal: () => void }) => {
               id="invoiceName"
               name="invoiceName"
               placeholder="Enter invoice name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
             />
           </div>
           <div className="mb-4">
@@ -200,21 +239,33 @@ const AddNewInvoicceForm = ({ closeModal }: { closeModal: () => void }) => {
               id="clientName"
               name="clientName"
               placeholder="Enter client name"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
             />
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="invoiceDate">
               Invoice Date </label>
-            <input type="date" id="invoiceDate" name="invoiceDate" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" />
+            <input type="date" id="invoiceDate" name="invoiceDate" className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-md focus:outline-none" />
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="status">Status</label>
-            <select id="status" className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none" name="status">
+            <select id="status" className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-md focus:outline-none" name="status">
               <option value="Paid">Paid</option>
               <option value="Pending">Pending</option>
               <option value="Overdue">Overdue</option>
             </select>
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700 mb-2" htmlFor="clientName">
+              Product
+            </label>
+            <input
+              type="product"
+              id="product"
+              name="product"
+              placeholder="Enter product name"
+              className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+            />
           </div>
           <div className="mb-4">
             <label className="block text-gray-700 mb-2" htmlFor="invoiceAmount">
@@ -225,7 +276,7 @@ const AddNewInvoicceForm = ({ closeModal }: { closeModal: () => void }) => {
               id="invoiceAmount"
               name="invoiceAmount"
               placeholder="Enter amount"
-              className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
+              className="w-full text-gray-700 px-4 py-2 border border-gray-300 rounded-md focus:outline-none"
             />
           </div>
 
